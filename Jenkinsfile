@@ -1,10 +1,8 @@
 pipeline {
-    agent any // Выбираем Jenkins агента, на котором будет происходить сборка: нам нужен 
-любой
+    agent any // Выбираем Jenkins агента, на котором будет происходить сборка: нам нужен любой
 
     triggers {
-        pollSCM('H/5 * * * *') // Запускать будем автоматически по крону примерно раз в 5 
-минут
+        pollSCM('H/5 * * * *') // Запускать будем автоматически по крону примерно раз в 5 минут
     }
 
     tools {
@@ -23,8 +21,7 @@ pipeline {
 
             post {
                 success {
-                    junit 'backend/target/surefire-reports/**/*.xml' // Передадим 
-результаты тестов в Jenkins
+                    junit 'backend/target/surefire-reports/**/*.xml' // Передадим результаты тестов в Jenkins
                 }
             }
         }
@@ -32,8 +29,7 @@ pipeline {
         stage('Build frontend') {
             steps {
                 dir("frontend") {
-                    sh 'npm install' // Для фронта сначала загрузим все сторонние 
-зависимости
+                    sh 'npm install' // Для фронта сначала загрузим все сторонние зависимости
                     sh 'npm run build' // Запустим сборку
                 }
             }
@@ -41,8 +37,7 @@ pipeline {
         
         stage('Save artifacts') {
             steps {
-                archiveArtifacts(artifacts: 
-'backend/target/sausage-store-0.0.1-SNAPSHOT.jar')
+                archiveArtifacts(artifacts: 'backend/target/sausage-store-0.0.1-SNAPSHOT.jar')
                 archiveArtifacts(artifacts: 'frontend/dist/frontend/*')
             }
         }
