@@ -61,6 +61,7 @@ sonarqube-frontend-sast:
       npm install -g sonarqube-scanner
       sonar-scanner
       -Dsonar.projectKey=${SONAR_FRONT_KEY}
+      -Dsonar.sources=.
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_FRONT_LOGIN}
   needs:
