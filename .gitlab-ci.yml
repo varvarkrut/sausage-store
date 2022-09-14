@@ -49,6 +49,8 @@ sonarqube-backend-sast:
       -Dsonar.projectKey=${SONAR_KEY}
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_LOGIN}
+  needs:
+    - build-backend-code-job
 
 slack-notification-backend:
   stage: notify
