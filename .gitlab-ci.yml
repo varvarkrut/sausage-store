@@ -14,7 +14,7 @@ build-backend-code-job:
   script:
     - cd backend
     - echo DKFJDKFHJDKFJKDHFDKJFK
-    - mvn -Dmaven.repo.local=/builds/std-009-057/.m2/test package
+    - mvn -Dmaven.repo.local=/builds/std-009-057/.m2/ package
   artifacts:
     paths:
       - backend/target/sausage-store-0.0.1-SNAPSHOT.jar
