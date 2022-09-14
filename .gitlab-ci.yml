@@ -50,7 +50,7 @@ sonarqube-backend-sast:
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_LOGIN}
   needs:
-    - build-frontend-code-job
+    - build-backend-code-job
 
 sonarqube-frontend-sast:
   stage: test
@@ -58,11 +58,12 @@ sonarqube-frontend-sast:
   script:
     - cd frontend
     - >
+      sonar-scanner
       -Dsonar.projectKey=${SONAR_FRONT_KEY}
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_FRONT_LOGIN}
   needs:
-    - build-backend-code-job
+    - build-frontend-code-job
 
 slack-notification-backend:
   stage: notify
