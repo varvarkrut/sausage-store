@@ -42,9 +42,10 @@ slack-notification-frontend:
   only:
     changes:
     - frontend/*
-  script: >
-    - curl -X POST -H "Content-type: application/json"  --data '{"text": "Danny Torrence left a 1 star review for your property.",
-    "blocks": [{"type": "section","text": {"type": "mrkdwn","text": "Danny Torrence left the following review for your property:"}},]}' https://hooks.slack.com/services/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
+  script:
+    - |
+    curl -X POST -H "Content-type: application/json"  --data '{"text": "Danny Torrence left a 1 star review for your property."}' https://hooks.slack.com/services/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
   needs:
     - build-frontend-code-job
+
 
