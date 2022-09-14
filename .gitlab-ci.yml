@@ -13,6 +13,7 @@ build-backend-code-job:
     - backend/*
   script:
     - cd backend
+    - echo DKFJDKFHJDKFJKDHFDKJFK
     - mvn -Dmaven.repo.local=/builds/std-009-057/.m2/test package
   artifacts:
     paths:
