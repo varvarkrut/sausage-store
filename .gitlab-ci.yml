@@ -13,7 +13,7 @@ build-backend-code-job:
     - backend/*
   script:
     - cd backend
-    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository package
+    - mvn package -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository
   artifacts:
     paths:
     - ${CI_PROJECT_DIR}/.m2/repository # сохранение зависимостей для SAST
