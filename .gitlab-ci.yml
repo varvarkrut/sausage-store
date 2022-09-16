@@ -70,6 +70,7 @@ sonarqube-frontend-sast:
       -Dsonar.sources=.
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_FRONT_LOGIN}
+      -Dsonar.projectName=XX_TEST_FRONTEND
   needs:
     - build-frontend-code-job
 
