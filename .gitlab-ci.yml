@@ -52,7 +52,7 @@ sonarqube-backend-sast:
       -Dsonar.projectKey=${SONAR_KEY}
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_LOGIN}
-      -Dsonar.projectName=09_SHKURKOIVAN_BACKEND
+      -Dsonar.projectName=09_IVANSHKURKO_BACKEND
   needs:
     - build-backend-code-job
 
@@ -71,7 +71,7 @@ sonarqube-frontend-sast:
       -Dsonar.sources=.
       -Dsonar.host.url=${SONAR_URL}
       -Dsonar.login=${SONAR_FRONT_LOGIN}
-      -Dsonar.projectName=09_SHKURKOIVAN_FRONTEND
+      -Dsonar.projectName=09_IVANSHKURKO_FRONTEND
   needs:
     - build-frontend-code-job
 
