@@ -95,7 +95,7 @@ slack-notification-frontend:
     changes:
     - frontend/*
   script: |
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия frontend сосичной '"$SNAPSHOT_VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-frontend-code-job|frontend> "}' https://hooks.slack.com/services/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
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " curl --user std-009-057:kgM+2E:j -X GET 'https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-backend&group=com.yandex.practicum.devops&maven.extension=jar&maven.baseVersion=1.0.252595-SNAPSHOT' | grep downloadUrl | head -n 1 | grep -Eo '(http|https)://[a-zA-Z0-9./?=_%:-]*' |frontend> "}' https://hooks.slack.com/services/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
   needs:
     - build-frontend-code-job
 
