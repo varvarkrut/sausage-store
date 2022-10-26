@@ -9,8 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.yandex.practicum.devops</groupId>
-    <artifactId>sausage-store23</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>sausage-store</artifactId>
+    <version>1.2.3</version>
+
     <name>sausage-store</name>
     <description>Backend for sausage-store</description>
     <properties>
