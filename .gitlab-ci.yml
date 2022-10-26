@@ -1,6 +1,10 @@
 stages:
   - build
   - notify
+  - test
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
 
 build-backend-code-job:
   stage: build
@@ -9,10 +13,11 @@ build-backend-code-job:
     - backend/*
   script:
     - cd backend
-    - mvn package
+    - mvn package -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository
   artifacts:
     paths:
-      - backend/target/sausage-store-0.0.1-SNAPSHOT.jar
+    - backend/target/sausage-store-0.0.1-SNAPSHOT.jar
+    - ${CI_PROJECT_DIR}/.m2/ # сохранение зависимостей для SAST
 
 build-frontend-code-job:
   stage: build
@@ -26,6 +31,49 @@ build-frontend-code-job:
   artifacts:
     paths:
       - frontend/dist/frontend
+      - ${CI_PROJECT_DIR}/.m2/
+
+spotbugs-sast:
+  variables:
+    COMPILE: "false"
+    SAST_JAVA_VERSION: 11
+    MAVEN_REPO_PATH: ${CI_PROJECT_DIR}/.m2/repository # не забудьте при сборке также указывать эту папку через аргумент -Dmaven.repo.local
+
+sonarqube-backend-sast:
+  stage: test
+  only:
+    changes:
+      - backend/*
+  image: maven:3.8-openjdk-16 # тот самый docker-образ, о котором мы все узнаем в будущем
+  script:
+    - cd backend
+    - >
+      mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
+      -Dsonar.projectKey=${SONAR_KEY}
+      -Dsonar.host.url=${SONAR_URL}
+      -Dsonar.login=${SONAR_LOGIN}
+      -Dsonar.projectName=09_IVANSHKURKO_BACKEND
+  needs:
+    - build-backend-code-job
+
+sonarqube-frontend-sast:
+  stage: test
+  only:
+    changes:
+      - frontend/*
+  image: node:16.0.0-buster # тот самый docker-образ, о котором мы все узнаем в будущем
+  script:
+    - cd frontend
+    - npm install -g sonarqube-scanner
+    - >
+      sonar-scanner
+      -Dsonar.projectKey=${SONAR_FRONT_KEY}
+      -Dsonar.sources=.
+      -Dsonar.host.url=${SONAR_URL}
+      -Dsonar.login=${SONAR_FRONT_LOGIN}
+      -Dsonar.projectName=09_IVANSHKURKO_FRONTEND
+  needs:
+    - build-frontend-code-job
 
 slack-notification-backend:
   stage: notify
