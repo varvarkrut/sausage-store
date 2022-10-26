@@ -92,7 +92,7 @@ slack-notification-frontend:
     changes:
     - frontend/*
   script: |
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия backend сосичной <'"$VERSION"> <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-frontend-code-job|frontend> "}' https://hooks.slack.com/services/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
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия backend сосичной '"$VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-frontend-code-job|frontend> "}' https://hooks.slack.com/services/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
   needs:
     - build-frontend-code-job
 
