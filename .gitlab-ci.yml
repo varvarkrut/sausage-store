@@ -1,6 +1,5 @@
 variables:
-  VERSION: 1.0.${CI_PIPELINE_ID}
-  SNAPSHOT_VERSION: 1.2.3
+  SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
 
 stages:
   - build
@@ -86,7 +85,7 @@ slack-notification-backend:
     changes:
     - backend/*
   script: |
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия backend сосичной '"$VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-backend-code-job|backend>  "}' https://hooks.slack.com/services/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
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия backend сосичной '"$SNAPSHOT_VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-backend-code-job|backend>  "}' https://hooks.slack.com/services/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
   needs:
     - build-backend-code-job
 
@@ -96,7 +95,7 @@ slack-notification-frontend:
     changes:
     - frontend/*
   script: |
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия frontend сосичной '"$VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-frontend-code-job|frontend> "}' https://hooks.slack.com/services/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
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия frontend сосичной '"$SNAPSHOT_VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-frontend-code-job|frontend> "}' https://hooks.slack.com/services/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
   needs:
     - build-frontend-code-job
 
@@ -109,7 +108,7 @@ upload-backend-release:
     - build-backend-code-job
   script:
     - cd backend
-    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -Dversion=${VERSION} -DskipTests deploy
+    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -DskipTests deploy
 
 cache:
   paths:
