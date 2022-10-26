@@ -2,6 +2,7 @@ stages:
   - build
   - notify
   - test
+  - release
 
 include:
   - template: Security/SAST.gitlab-ci.yml
@@ -94,3 +95,19 @@ slack-notification-frontend:
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Шкурко Иван собрал <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-frontend-code-job|frontend> "}' https://hooks.slack.com/services/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
   needs:
     - build-frontend-code-job
+
+upload-backend-release:
+  stage: release
+  only:
+    changes:
+      - backend/*
+  needs:
+    - build-backend-code-job
+  script:
+    - cd backend
+    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -Dversion.application=${VERSION} -DskipTests deploy
+
+cache:
+  paths:
+    - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
+    - frontend/dist/frontend # для хранения фронта
