@@ -85,7 +85,7 @@ slack-notification-backend:
     changes:
     - backend/*
   script: |
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия backend сосичной $VERSION <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-backend-code-job|backend>  "}' https://hooks.slack.com/services/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
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия backend сосичной '"$VERSION"' <'"$CI_PROJECT_URL"'/-/jobs/artifacts/'"$CI_COMMIT_REF_NAME"'/download?job=build-backend-code-job|backend>  "}' https://hooks.slack.com/services/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
   needs:
     - build-backend-code-job
 
@@ -108,7 +108,7 @@ upload-backend-release:
     - build-backend-code-job
   script:
     - cd backend
-    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -Dversion.application=${VERSION} -DskipTests deploy
+    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -Dversion=${VERSION} -DskipTests deploy
 
 cache:
   paths:
