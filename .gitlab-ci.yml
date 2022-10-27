@@ -1,5 +1,5 @@
 variables:
-  BUILD_VERSION: 1.0.${CI_PIPELINE_ID}
+  SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
 
 stages:
   - build
@@ -111,7 +111,7 @@ upload-frontend-release:
   script:
     - cd frontend/dist
     - tar czvf sausage-store-${VERSION}.tar.gz frontend
-    - curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${BUILD_VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-shkurko-ivan-frontend/${BUILD_VERSION}/sausage-store-${BUILD_VERSION}.tar.gz
+    - curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-shkurko-ivan-frontend/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
 
 slack-notification-backend:
   stage: notify
@@ -119,8 +119,8 @@ slack-notification-backend:
     changes:
     - backend/*
   script: |
-    ARTIFACT_URL=$(curl --user std-009-057:kgM+2E:j -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={BUILD_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$BUILD_VERSION"'   "}' https://hooks.slack.com/services/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
+    ARTIFACT_URL=$(curl --user std-009-057:kgM+2E:j -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={SNAPSHOT_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
   needs:
     - upload-backend-release
 
