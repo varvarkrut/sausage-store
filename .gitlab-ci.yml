@@ -95,7 +95,7 @@ slack-notification-frontend:
     changes:
     - frontend/*
   script: |
-    ARTIFACT_URL = $(curl --user std-009-057:kgM+2E:j -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion=1.0.252595-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
+    ARTIFACT_URL=$(curl --user std-009-057:kgM+2E:j -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion=1.0.252595-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
     curl -X POST -H "Content-type: application/json"  --data '{"text": " <'"$ARTIFACT_URL"'|frontend> "}' https://hooks.slack.com/services/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
   needs:
     - build-frontend-code-job
