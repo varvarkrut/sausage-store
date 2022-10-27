@@ -3,9 +3,9 @@ variables:
 
 stages:
   - build
-  - notify
   - test
   - release
+  - notify
 
 include:
   - template: Security/SAST.gitlab-ci.yml
