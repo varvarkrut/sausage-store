@@ -1,6 +1,12 @@
 variables:
   SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
 
+default:
+  cache:
+    paths:
+      - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
+      - frontend/dist/frontend # для хранения фронта
+
 stages:
   - build
   - test
@@ -111,8 +117,3 @@ slack-notification-backend:
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
   needs:
     - upload-backend-release
-
-cache:
-  paths:
-    - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
-    - frontend/dist/frontend # для хранения фронта
