@@ -114,7 +114,7 @@ slack-notification-backend:
     changes:
     - backend/*
   script: |
-    ARTIFACT_URL=$(curl --user std-009-057:kgM+2E:j -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={$SNAPSHOT_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
+    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={$SNAPSHOT_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
   needs:
     - upload-backend-release
@@ -125,7 +125,7 @@ slack-notification-frontend:
     changes:
     - frontend/*
   script: |
-    ARTIFACT_URL=$(curl --user std-009-057:kgM+2E:j -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
+    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
   needs:
     - upload-frontend-release
