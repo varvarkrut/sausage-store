@@ -24,7 +24,7 @@ build-backend-code-job:
   script:
     - cd backend
     - mvn package -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository
-  artifacts:
+  cache:
     paths:
     - backend/target/sausage-store-$SNAPSHOT_VERSION-SNAPSHOT.jar
     - ${CI_PROJECT_DIR}/.m2/ # сохранение зависимостей для SAST
@@ -38,7 +38,7 @@ build-frontend-code-job:
     - cd frontend
     - npm install
     - npm run build
-  artifacts:
+  cache:
     paths:
       - frontend/dist/frontend
       - ${CI_PROJECT_DIR}/.m2/
