@@ -116,8 +116,8 @@ upload-frontend-release:
     - build-frontend-code-job
   script:
     - cd frontend/dist
-    - tar czvf sausage-store-${VERSION}.tar.gz frontend
-    - curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-shkurko-ivan-frontend/${VERSION}/sausage-store-${VERSION}.tar.gz
+    - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz frontend
+    - curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-shkurko-ivan-frontend/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
 
 slack-notification-backend:
   stage: notify
