@@ -122,7 +122,7 @@
   <repository>
        <id>sausage-store</id>
        <name>sausage-store</name>
-       <url>${env.NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-backend/</url>
+       <url>${env.NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-backend/sausage-store/</url>
    </repository>
 </distributionManagement>
 
