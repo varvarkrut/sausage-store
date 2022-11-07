@@ -1,0 +1,64 @@
+cache:
+  paths:
+    - frontend/dist/frontend
+
+variables:
+  SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
+
+stages:
+   - build
+   - test
+   - release
+   - notify
+
+build:
+   stage: build
+   script:
+     - cd frontend
+     - npm install
+     - npm run build
+   only:
+     changes:
+     - frontend/*
+
+sonarqube-sast:
+  stage: test
+  only:
+    changes:
+      - frontend/*
+  image: node:16.0.0-buster # тот самый docker-образ, о котором мы все узнаем в будущем
+  script:
+    - cd frontend
+    - npm install -g sonarqube-scanner
+    - >
+      sonar-scanner
+      -Dsonar.projectKey=${SONAR_FRONT_KEY}
+      -Dsonar.sources=.
+      -Dsonar.host.url=${SONAR_URL}
+      -Dsonar.login=${SONAR_FRONT_LOGIN}
+      -Dsonar.projectName=09_IVANSHKURKO_FRONTEND
+  needs:
+    - build-frontend-code-job
+
+
+
+release:
+   stage: release
+   script:
+     - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz sausage-store-${SNAPSHOT_VERSION}
+     - >
+       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-front/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
+   only:
+     changes:
+     - frontend/*
+
+notification:
+  stage: notify
+  only:
+    changes:
+    - frontend/*
+  script: |
+    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
+  needs:
+    - upload-frontend-release
