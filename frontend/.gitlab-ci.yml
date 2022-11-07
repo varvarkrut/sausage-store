@@ -38,7 +38,7 @@ sonarqube-sast:
       -Dsonar.login=${SONAR_FRONT_LOGIN}
       -Dsonar.projectName=09_IVANSHKURKO_FRONTEND
   needs:
-    - build-frontend-code-job
+    - build
 
 
 
@@ -61,4 +61,4 @@ notification:
     ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
   needs:
-    - upload-frontend-release
+    - release

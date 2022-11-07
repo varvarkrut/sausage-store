@@ -52,7 +52,7 @@ sonarqube-sast:
       -Dsonar.login=${SONAR_LOGIN}
       -Dsonar.projectName=09_IVANSHKURKO_BACKEND
   needs:
-    - build-backend-code-job
+    - build
 
 
 release:
@@ -73,7 +73,7 @@ notification:
     ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={$SNAPSHOT_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
   needs:
-    - upload-backend-release
+    - release
 
 before_script:
   #устанавливаем ssh-agent для удобства аутентификации по ssh
