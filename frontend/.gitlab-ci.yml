@@ -1,9 +1,11 @@
-cache:
-  paths:
-    - frontend/dist/frontend
+default:
+  cache:
+    paths:
+      - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
+      - frontend/dist/frontend
 
 variables:
-  SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
+    SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
 
 stages:
    - build
@@ -20,6 +22,11 @@ build:
    only:
      changes:
      - frontend/*
+   cache:
+     paths:
+       - frontend/dist/frontend
+       - ${CI_PROJECT_DIR}/.m2/
+
 
 sonarqube-sast:
   stage: test
