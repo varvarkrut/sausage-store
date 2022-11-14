@@ -1,7 +1,6 @@
 default:
   cache:
     paths:
-      - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
       - frontend/dist/frontend
 
 variables:
@@ -12,6 +11,9 @@ stages:
    - test
    - release
    - notify
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
 
 build:
    stage: build
@@ -25,7 +27,6 @@ build:
    cache:
      paths:
        - frontend/dist/frontend
-       - ${CI_PROJECT_DIR}/.m2/
 
 
 sonarqube-sast:
@@ -53,7 +54,7 @@ release:
    stage: release
    script:
      - cd frontend/dist
-     - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz sausage-store-${SNAPSHOT_VERSION}
+     - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz frontend
      - >
        curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-front/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
    only:
