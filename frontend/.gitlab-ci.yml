@@ -56,7 +56,7 @@ release:
      - cd frontend/dist
      - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz frontend
      - >
-       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/sausage-store-front/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
+       curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-frontend/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
    only:
      changes:
      - frontend/*
@@ -67,7 +67,7 @@ notification:
     changes:
     - frontend/*
   script: |
-    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
+    ARTIFACT_URL=${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-backend-release/com/yandex/practicum/devops/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.jar
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
   needs:
     - release
