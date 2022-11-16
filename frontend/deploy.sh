@@ -12,4 +12,4 @@ sudo cp -r ./frontend /var/www-data/dist/frontend||true  #true говорит, �
 #Обновляем конфиг systemd с помощью рестарта
 sudo systemctl daemon-reload
 #Перезапускаем сервис сосисочной
-sudo systemctl restart sausage-store
+sudo systemctl restart sausage-store-frontend
