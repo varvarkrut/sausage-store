@@ -1,0 +1,13 @@
+[Unit]
+Description=sausagestore_frontend
+After=network.target
+
+[Service]
+Type=simple
+User=front-user
+ExecStart=http-server /var/www-data/dist/frontend/ -p 80 --proxy http://localhost:8080
+StandardOutput=file:/logs/out-front.log
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
