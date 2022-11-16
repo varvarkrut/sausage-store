@@ -11,4 +11,4 @@ sudo cp ./sausage-store.jar /home/jarservice/sausage-store.jar||true #"jar||true
 #Обновляем конфиг systemd с помощью рестарта
 sudo systemctl daemon-reload
 #Перезапускаем сервис сосисочной
-sudo systemctl restart sausage-store
+sudo systemctl restart sausage-store-backend
