@@ -67,7 +67,7 @@ notification:
     changes:
     - frontend/*
   script: |
-    ARTIFACT_URL=${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-frontend/sausage-store/${SNAPSHOT_VERSION}/sausage-store-1.0.${SNAPSHOT_VERSION}.tar.gz
+    ARTIFACT_URL=${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-frontend/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
     curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
   needs:
     - release
