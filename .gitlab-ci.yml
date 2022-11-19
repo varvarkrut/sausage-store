@@ -1,131 +1,158 @@
-variables:
-  SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
+#variables:
+#  SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
+#
+#default:
+#  cache:
+#    paths:
+#      - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
+#      - frontend/dist/frontend # для хранения фронта
+#
+#stages:
+#  - build
+#  - test
+#  - release
+#  - notify
+#
+#include:
+#  - template: Security/SAST.gitlab-ci.yml
+#
+#build-backend-code-job:
+#  stage: build
+#  only:
+#    changes:
+#    - backend/*
+#  script:
+#    - cd backend
+#    - mvn package -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository
+#  cache:
+#    paths:
+#    - backend/target/sausage-store-$SNAPSHOT_VERSION-SNAPSHOT.jar
+#    - ${CI_PROJECT_DIR}/.m2/ # сохранение зависимостей для SAST
+#
+#build-frontend-code-job:
+#  stage: build
+#  only:
+#    changes:
+#    - frontend/*
+#  script:
+#    - cd frontend
+#    - npm install
+#    - npm run build
+#  cache:
+#    paths:
+#      - frontend/dist/frontend
+#      - ${CI_PROJECT_DIR}/.m2/
+#
+#spotbugs-sast:
+#  variables:
+#    COMPILE: "false"
+#    SAST_JAVA_VERSION: 11
+#    MAVEN_REPO_PATH: ${CI_PROJECT_DIR}/.m2/repository # не забудьте при сборке также указывать эту папку через аргумент -Dmaven.repo.local
+#
+#sonarqube-backend-sast:
+#  stage: test
+#  only:
+#    changes:
+#      - backend/*
+#  image: maven:3.8-openjdk-16 # тот самый docker-образ, о котором мы все узнаем в будущем
+#  script:
+#    - cd backend
+#    - >
+#      mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
+#      -Dsonar.projectKey=${SONAR_KEY}
+#      -Dsonar.host.url=${SONAR_URL}
+#      -Dsonar.login=${SONAR_LOGIN}
+#      -Dsonar.projectName=09_IVANSHKURKO_BACKEND
+#  needs:
+#    - build-backend-code-job
+#
+#sonarqube-frontend-sast:
+#  stage: test
+#  only:
+#    changes:
+#      - frontend/*
+#  image: node:16.0.0-buster # тот самый docker-образ, о котором мы все узнаем в будущем
+#  script:
+#    - cd frontend
+#    - npm install -g sonarqube-scanner
+#    - >
+#      sonar-scanner
+#      -Dsonar.projectKey=${SONAR_FRONT_KEY}
+#      -Dsonar.sources=.
+#      -Dsonar.host.url=${SONAR_URL}
+#      -Dsonar.login=${SONAR_FRONT_LOGIN}
+#      -Dsonar.projectName=09_IVANSHKURKO_FRONTEND
+#  needs:
+#    - build-frontend-code-job
+#
+#upload-backend-release:
+#  stage: release
+#  only:
+#    changes:
+#      - backend/*
+#  needs:
+#    - build-backend-code-job
+#  script:
+#    - cd backend
+#    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -DskipTests deploy
+#
+#upload-frontend-release:
+#  stage: release
+#  only:
+#    changes:
+#    - frontend/*
+#  needs:
+#    - build-frontend-code-job
+#  script:
+#    - cd frontend/dist
+#    - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz frontend
+#    - curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-frontend/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
+#
+#slack-notification-backend:
+#  stage: notify
+#  only:
+#    changes:
+#    - backend/*
+#  script: |
+#    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={$SNAPSHOT_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
+#    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
+#  needs:
+#    - upload-backend-release
+#
+#slack-notification-frontend:
+#  stage: notify
+#  only:
+#    changes:
+#    - frontend/*
+#  script: |
+#    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
+#    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
+#  needs:
+#    - upload-frontend-release
 
-default:
-  cache:
-    paths:
-      - ${CI_PROJECT_DIR}/.m2/repository # для хранения зависимостей бэкенда
-      - frontend/dist/frontend # для хранения фронта
+
+
+
 
 stages:
-  - build
-  - test
-  - release
-  - notify
+  - module-pipelines
 
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
-build-backend-code-job:
-  stage: build
+frontend:
+  stage: module-pipelines
+  trigger:
+    include:
+      - "/frontend/.gitlab-ci.yml"
+    strategy: depend # depend нужен, если какой-нибудь дочерний пайплайн свалился, мы знали, что общий пайплайн тоже идёт с ошибкой
   only:
-    changes:
-    - backend/*
-  script:
-    - cd backend
-    - mvn package -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository
-  cache:
-    paths:
-    - backend/target/sausage-store-$SNAPSHOT_VERSION-SNAPSHOT.jar
-    - ${CI_PROJECT_DIR}/.m2/ # сохранение зависимостей для SAST
+    changes: # как только происходит изменение в папке frontend, запускается дочерний пайплайн, который лежит в этой папке
+      - frontend/**/*
 
-build-frontend-code-job:
-  stage: build
+backend:
+  stage: module-pipelines
+  trigger:
+    include:
+      - "/backend/.gitlab-ci.yml"
+    strategy: depend
   only:
-    changes:
-    - frontend/*
-  script:
-    - cd frontend
-    - npm install
-    - npm run build
-  cache:
-    paths:
-      - frontend/dist/frontend
-      - ${CI_PROJECT_DIR}/.m2/
-
-spotbugs-sast:
-  variables:
-    COMPILE: "false"
-    SAST_JAVA_VERSION: 11
-    MAVEN_REPO_PATH: ${CI_PROJECT_DIR}/.m2/repository # не забудьте при сборке также указывать эту папку через аргумент -Dmaven.repo.local
-
-sonarqube-backend-sast:
-  stage: test
-  only:
-    changes:
-      - backend/*
-  image: maven:3.8-openjdk-16 # тот самый docker-образ, о котором мы все узнаем в будущем
-  script:
-    - cd backend
-    - >
-      mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
-      -Dsonar.projectKey=${SONAR_KEY}
-      -Dsonar.host.url=${SONAR_URL}
-      -Dsonar.login=${SONAR_LOGIN}
-      -Dsonar.projectName=09_IVANSHKURKO_BACKEND
-  needs:
-    - build-backend-code-job
-
-sonarqube-frontend-sast:
-  stage: test
-  only:
-    changes:
-      - frontend/*
-  image: node:16.0.0-buster # тот самый docker-образ, о котором мы все узнаем в будущем
-  script:
-    - cd frontend
-    - npm install -g sonarqube-scanner
-    - >
-      sonar-scanner
-      -Dsonar.projectKey=${SONAR_FRONT_KEY}
-      -Dsonar.sources=.
-      -Dsonar.host.url=${SONAR_URL}
-      -Dsonar.login=${SONAR_FRONT_LOGIN}
-      -Dsonar.projectName=09_IVANSHKURKO_FRONTEND
-  needs:
-    - build-frontend-code-job
-
-upload-backend-release:
-  stage: release
-  only:
-    changes:
-      - backend/*
-  needs:
-    - build-backend-code-job
-  script:
-    - cd backend
-    - mvn -Dmaven.repo.local=${CI_PROJECT_DIR}/.m2/repository -s settings.xml -DskipTests deploy
-
-upload-frontend-release:
-  stage: release
-  only:
-    changes:
-    - frontend/*
-  needs:
-    - build-frontend-code-job
-  script:
-    - cd frontend/dist
-    - tar czvf sausage-store-${SNAPSHOT_VERSION}.tar.gz frontend
-    - curl -v -u "${NEXUS_REPO_USER}:${NEXUS_REPO_PASS}" --upload-file sausage-store-${SNAPSHOT_VERSION}.tar.gz ${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-frontend/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.tar.gz
-
-slack-notification-backend:
-  stage: notify
-  only:
-    changes:
-    - backend/*
-  script: |
-    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET  https://nexus.praktikum-services.ru/service/rest/v1/search?maven.baseVersion={$SNAPSHOT_VERSION}-SNAPSHOT | grep downloadUrl | head -1 | grep -Eo https://[a-zA-Z0-9./?=_%:-]*)
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
-  needs:
-    - upload-backend-release
-
-slack-notification-frontend:
-  stage: notify
-  only:
-    changes:
-    - frontend/*
-  script: |
-    ARTIFACT_URL=$(curl --user $NEXUS_REPO_USER:$NEXUS_REPO_PASS -X GET https://nexus.praktikum-services.ru/service/rest/v1/search?repository=10-sausage-store-shkurko-ivan-frontend | grep downloadUrl | tail -1 | grep -Eo 'https?://\S+?\.gz')
-    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|frontend> сосичной '"$SNAPSHOT_VERSION"' "}' https://hooks.slack.com/services/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
-  needs:
-    - upload-frontend-release
+    changes:  # как только происходит изменение в папке backend, запускается дочерний пайплайн, который лежит в этой папке
+      - backend/**/*
