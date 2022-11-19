@@ -1,0 +1,92 @@
+cache:
+  paths:
+    - ${CI_PROJECT_DIR}/.m2/repository
+
+variables:
+   SNAPSHOT_VERSION: 1.0.${CI_PIPELINE_ID}
+   MAVEN_REPO_PATH: ${CI_PROJECT_DIR}/.m2/repository
+   JAVA_OPTS: -XX:MaxRAMPercentage=90 # для того, чтобы Maven не съел всю свободную оперативку
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+stages:
+   - build
+   - test
+   - release
+   - notify
+   - deploy
+
+build:
+   stage: build
+   script:
+      - cd backend
+      - mvn package -Dversion.application=${SNAPSHOT_VERSION} -Dmaven.repo.local=${MAVEN_REPO_PATH}
+   rules: # rules и only в данных случаях взаимозаменяемы
+      - changes:
+           - backend/*
+   cache:
+     paths:
+       - backend/target/sausage-store-$SNAPSHOT_VERSION-SNAPSHOT.jar
+       - ${CI_PROJECT_DIR}/.m2/ # сохранение зависимостей для SAST
+
+
+spotbugs-sast:
+  variables:
+    COMPILE: "false"
+    SAST_JAVA_VERSION: 11
+    MAVEN_REPO_PATH: ${CI_PROJECT_DIR}/.m2/repository # не забудьте при сборке также указывать эту папку через аргумент -Dmaven.repo.local
+
+sonarqube-sast:
+  stage: test
+  only:
+    changes:
+      - backend/*
+  image: maven:3.8-openjdk-16 # тот самый docker-образ, о котором мы все узнаем в будущем
+  script:
+    - cd backend
+    - >
+      mvn verify sonar:sonar -Dsonar.qualitygate.wait=true
+      -Dsonar.projectKey=${SONAR_KEY}
+      -Dsonar.host.url=${SONAR_URL}
+      -Dsonar.login=${SONAR_LOGIN}
+      -Dsonar.projectName=09_IVANSHKURKO_BACKEND
+  needs:
+    - build
+
+
+release:
+   stage: release
+   script:
+      - cd backend
+      - mvn deploy -DskipTests -Dversion.application=${SNAPSHOT_VERSION} -Dmaven.repo.local=${MAVEN_REPO_PATH} -s settings.xml
+   rules:
+      - changes:
+           - backend/*
+
+notification:
+  stage: notify
+  only:
+    changes:
+    - backend/*
+  script: |
+    ARTIFACT_URL=${NEXUS_REPO_URL}/10-sausage-store-shkurko-ivan-backend-release/com/yandex/practicum/devops/sausage-store/${SNAPSHOT_VERSION}/sausage-store-${SNAPSHOT_VERSION}.jar
+    curl -X POST -H "Content-type: application/json"  --data '{"text": " Вышла новая версия <'"$ARTIFACT_URL"'|backend> сосичной '"$SNAPSHOT_VERSION"'   "}' https://hooks.slack.com/services/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
+  needs:
+    - release
+
+deploy:
+  stage: deploy
+  before_script:
+    #устанавливаем ssh-agent для удобства аутентификации по ssh
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    #сохраняем сгенеренный ранее приватный ключ для раннера
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 600 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - scp ./backend/sausage-store-backend.service ${DEV_USER}@${DEV_HOST}:/home/${DEV_USER}/sausage-store-backend.service
+    - ssh ${DEV_USER}@${DEV_HOST} "export "CURRENT_VERSION=${SNAPSHOT_VERSION}"; export "VERSION=${SNAPSHOT_VERSION}"; export "DEV_HOST=${DEV_HOST}";export "NEXUS_REPO_URL=${NEXUS_REPO_URL}"; export "NEXUS_REPO_USER=${NEXUS_REPO_USER}"; export "NEXUS_REPO_PASS=${NEXUS_REPO_PASS}";setsid /bin/bash -s " < ./backend/deploy.sh
