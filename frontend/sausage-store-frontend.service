@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=front-user
 ExecStart=http-server /var/www-data/dist/frontend/ -p 80 --proxy http://localhost:8080
-StandardOutput=file:/logs/out-front.log
+StandardOutput=file:/opt/log/sausage-store-frontend.log
 Restart=on-failure
 
 [Install]
