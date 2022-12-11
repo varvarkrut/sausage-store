@@ -13,6 +13,15 @@ ExecStart=/usr/bin/java \
 -Dmyserver.bindPort='8080' \
 -Dmyserver.hostName='Sausage-store' \
 -jar '/home/jarservice/sausage-store.jar'
+
+# подставьте значения переменных
+# PostgreSQL
+--spring.datasource.url=jdbc:postgresql://rc1b-5y9bn5sgesewht1l.mdb.yandexcloud.net:6432/vanyashcurko
+--spring.datasource.username=vanyashcurko
+--spring.datasource.password=Testusr1234
+
+# MongoDB
+--spring.data.mongodb.uri=mongodb://vanyashcurko:Testusr1234@$rc1b-i501k9ruzubovb2x.mdb.yandexcloud.net:27018/$vanyashcurko?tls=true
 SuccessExitStatus=143
 
 [Install]
