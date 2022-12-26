@@ -14,7 +14,7 @@
 
     <name>sausage-store</name>
     <description>Backend for sausage-store</description>
-        <dependencyManagement>
+    <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -25,10 +25,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-vault-config</artifactId>
-</dependency>
     <properties>
         <java.version>16</java.version>
         <sonar.projectKey>test_manual</sonar.projectKey>
