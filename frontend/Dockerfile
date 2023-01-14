@@ -1,9 +1,9 @@
-FROM node:14.17.3-alpine
-# Create app directory
+FROM node:14.17.3-alpine as builder
+ARG VERSION=${VERSION}
 WORKDIR /usr/src/app
 COPY . .
-RUN npm install
-RUN npm install -g http-server
-RUN npm run build
-EXPOSE 80
-ENTRYPOINT ["http-server", "dist/frontend/", "-p", "80", "--proxy", "http://sausage-store:8080"]
+RUN npm install && npm run build
+
+FROM nginx:1.23.1-alpine
+COPY --from=builder /usr/src/app/dist/frontend /usr/share/nginx/html
+EXPOSE 8080
