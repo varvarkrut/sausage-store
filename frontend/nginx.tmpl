@@ -8,15 +8,25 @@ upstream {{ $host }} {
 {{ end }}
 
 }
+proxy_cache_path /etc/nginx/cache keys_zone=frontend:50m max_size=100m;
 
 server {
-
   listen 80;
+  server_name pashkov.hopto.org;
+  return 301 https://$host$request_uri;
+}
+server {
+
 
   location / {
     root   /usr/share/nginx/html;
     index  index.html;
     try_files $uri $uri/ /index.html;
+    proxy_cache frontend;
+    proxy_cache_key $request_method$request_uri;
+    proxy_cache_min_uses 1;
+    proxy_cache_methods GET;
+    proxy_cache_valid 200 1y;
   }
 
   location /api {
