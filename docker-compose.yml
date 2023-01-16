@@ -1,17 +1,58 @@
-version: "3.3"
+version: "3.4"
 services:
 
-  backend:
+  backend-blue:
     image: $CI_REGISTRY_IMAGE/sausage-backend:latest
-    container_name: sausage-store
+#    container_name: backend-blue
+    restart: always
     environment:
-      # Переменные из application.properties можно заменить переменными окружения
       REPORT_PATH: /app/log/reports
-      LOG_PATH: /app/logs
+      LOG_PATH: /app/log
       VIRTUAL_HOST: "backend"
       SPRING_DATASOURCE_USERNAME: $SPRING_DATASOURCE_USERNAME
       SPRING_DATASOURCE_PASSWORD: $SPRING_DATASOURCE_PASSWORD
       SPRING_DATASOURCE_URL: $SPRING_DATASOURCE_URL
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/actuator/health
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 6
+    networks:
+      - sausage-store
+
+  backend-green:
+    image: $CI_REGISTRY_IMAGE/sausage-backend:latest
+#    container_name: backend-green
+    restart: always
+    environment:
+      REPORT_PATH: /app/log/reports
+      LOG_PATH: /app/log
+      VIRTUAL_HOST: "backend"
+      SPRING_DATASOURCE_USERNAME: $SPRING_DATASOURCE_USERNAME
+      SPRING_DATASOURCE_PASSWORD: $SPRING_DATASOURCE_PASSWORD
+      SPRING_DATASOURCE_URL: $SPRING_DATASOURCE_URL
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/actuator/health
+      interval: 30s
+      start_period: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - sausage-store
+
+
+#  backend:
+#    image: $CI_REGISTRY_IMAGE/sausage-backend:latest
+#    container_name: sausage-store
+#    environment:
+#      # Переменные из application.properties можно заменить переменными окружения
+#      REPORT_PATH: /app/log/reports
+#      LOG_PATH: /app/logs
+#      VIRTUAL_HOST: "backend"
+#      SPRING_DATASOURCE_USERNAME: $SPRING_DATASOURCE_USERNAME
+#      SPRING_DATASOURCE_PASSWORD: $SPRING_DATASOURCE_PASSWORD
+#      SPRING_DATASOURCE_URL: $SPRING_DATASOURCE_URL
 
 
 
