@@ -1,10 +1,10 @@
-FROM maven:3.8-openjdk-16 as builder
+FROM cr.yandex/crp4v5843a482vqmajv8/maven:3.8-openjdk-16 as builder
 ARG VERSION=${VERSION}
 WORKDIR /usr/src/app
 COPY . .
 RUN mvn package -DskipTests -Dversion.application=${VERSION}
 
-FROM openjdk:16
+FROM cr.yandex/crp4v5843a482vqmajv8/openjdk:16
 ARG VERSION=${VERSION}
 WORKDIR /usr/src/app
 RUN curl https://storage.yandexcloud.net/cloud-certs/CA.pem -o YandexInternalRootCA.crt && \
